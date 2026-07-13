@@ -3,7 +3,10 @@ package dev.malay.productservicejuly26.services;
 import dev.malay.productservicejuly26.dtos.FakeStoreProductDto;
 import dev.malay.productservicejuly26.models.Category;
 import dev.malay.productservicejuly26.models.Product;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpMessageConverterExtractor;
+import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -16,6 +19,24 @@ import java.util.List;
 public class FakeStoreProductService implements ProductService{
 
     private RestTemplate restTemplate;
+    // RestTemplate is a Spring class that is used to call another REST API from your Spring Boot application.
+    /*Without RestTemplate, You would have to manually:-
+    -> Open an HTTP connection
+    -> Send the request
+    -> Read the response
+    -> Convert JSON to Java objects
+    -> Handle errors
+    --A lot of work.*/
+    /*
+    With RestTemplate Just one line:
+    RestTemplate restTemplate = new RestTemplate();
+    Product product = restTemplate.getForObject(
+        "https://fakestoreapi.com/products/1",
+        Product.class
+        );
+     Done.
+     */
+
     public FakeStoreProductService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -42,6 +63,34 @@ public class FakeStoreProductService implements ProductService{
         }
         return products;
     }
+
+    @Override
+    public void deleteProduct(Long productId) {
+
+    }
+
+    //PATCH-> Partial update
+    @Override
+    public Product updateProduct(Long productId, Product product) {
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(product, FakeStoreProductDto.class);
+        HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreProductService.class,
+                restTemplate.getMessageConverters());
+        FakeStoreProductDto response= restTemplate.execute("https://fakestoreapi.com/products/"+ productId,
+                HttpMethod.PATCH, requestCallback, responseExtractor);
+        return convertFakeProductDtoToProduct(response);
+    }
+
+    //PUT -> Replace the Product
+    @Override
+    public Product replaceProduct(Long productId, Product product) {
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(product, FakeStoreProductDto.class);
+        HttpMessageConverterExtractor<FakeStoreProductDto> responseExtractor = new HttpMessageConverterExtractor(FakeStoreProductService.class,
+                restTemplate.getMessageConverters());
+        FakeStoreProductDto response= restTemplate.execute("https://fakestoreapi.com/products/"+ productId,
+                HttpMethod.PUT, requestCallback, responseExtractor);
+        return convertFakeProductDtoToProduct(response);
+    }
+
 
     private Product convertFakeProductDtoToProduct(FakeStoreProductDto fakeStoreProductDto) {
 
