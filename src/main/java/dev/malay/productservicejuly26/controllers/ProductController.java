@@ -1,24 +1,24 @@
 package dev.malay.productservicejuly26.controllers;
 
+import dev.malay.productservicejuly26.exceptions.ProductNotFoundException;
 import dev.malay.productservicejuly26.models.Product;
 import dev.malay.productservicejuly26.services.ProductService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-    private ProductService productService;
 
+    private ProductService productService;
     public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
     //GET-> http://localhost:8080/products/10
     @GetMapping("/{id}")
-    public Product getProductByID(@PathVariable("id") Long id){
+    public Product getProductByID(@PathVariable("id") Long id) throws ProductNotFoundException {
         return productService.getSingleProduct(id);
     }
 
@@ -29,8 +29,9 @@ public class ProductController {
     }
 
     //DELETE-> https://localhost:8080/products/2
-    public void deleteProduct(Long id){
-
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable("id") Long id){
+        System.out.println(id);
     }
 
     // PATCH-> https://localhost:8080/products/1

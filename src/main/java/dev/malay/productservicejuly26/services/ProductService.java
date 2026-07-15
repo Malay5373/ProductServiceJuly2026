@@ -1,11 +1,12 @@
 package dev.malay.productservicejuly26.services;
 
+import dev.malay.productservicejuly26.exceptions.ProductNotFoundException;
 import dev.malay.productservicejuly26.models.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    Product getSingleProduct(Long productId);
+    Product getSingleProduct(Long productId) throws ProductNotFoundException;
     List<Product> getAllProducts();
     public void deleteProduct(Long productId);
     public Product updateProduct(Long productId, Product product);
