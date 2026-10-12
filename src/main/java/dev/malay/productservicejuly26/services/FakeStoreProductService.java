@@ -4,6 +4,7 @@ import dev.malay.productservicejuly26.dtos.FakeStoreProductDto;
 import dev.malay.productservicejuly26.exceptions.ProductNotFoundException;
 import dev.malay.productservicejuly26.models.Category;
 import dev.malay.productservicejuly26.models.Product;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpMessageConverterExtractor;
@@ -13,7 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
+@Profile("fake-store")
 //@Component or @Service or @Controller or @Repository all are same
 // but in service class @Service is better option,
 // for repository class is better @Repository like. But if any confusion is there then choose @Component .
@@ -41,6 +44,14 @@ public class FakeStoreProductService implements ProductService{
     public FakeStoreProductService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+
+    @Override
+    public Product createProduct(Product product) {
+        FakeStoreProductDto response = restTemplate.postForObject(
+                "https://fakestoreapi.com/products", product, FakeStoreProductDto.class);
+        return convertFakeProductDtoToProduct(response);
+    }
+
     @Override
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
         //call FakeStore to fetch the product with given id => HTTP call

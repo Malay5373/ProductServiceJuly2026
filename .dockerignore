@@ -1,0 +1,7 @@
+.git
+.github
+.idea
+target
+Dockerfile
+docker-compose.yml
+*.log
